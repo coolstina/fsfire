@@ -1,6 +1,7 @@
 package fsfire
 
 import (
+	"embed"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,4 +79,14 @@ func GetFileExtension(filename string, ops ...Option) string {
 		}
 		return ext
 	}()
+}
+
+// GetFileContentWithFS Get file content with embed filesystem.
+func GetFileContentWithFS(fs embed.FS, filename string) ([]byte, error) {
+	data, err := fs.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }

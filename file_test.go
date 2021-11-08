@@ -1,7 +1,9 @@
 package fsfire
 
 import (
+	"embed"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -151,5 +153,51 @@ func TestGetFileExtension(t *testing.T) {
 		actual := GetFileExtension(grid.filename,
 			WithSpecificFileExtensionContainsDot(grid.dot))
 		assert.Equal(t, grid.expected, actual)
+	}
+}
+
+//go:embed test/data/embed
+var efs embed.FS
+
+func TestGetFileContentWithFS(t *testing.T) {
+	grids := []struct {
+		filename        string
+		expectedError   error
+		expectedContext []byte
+	}{
+		{
+			filename:        "a.txt",
+			expectedError:   fmt.Errorf(`open a.txt: file does not exist`),
+			expectedContext: []byte(`a.txt file.`),
+		},
+		{
+			filename:        "test/data/embed/a.txt",
+			expectedError:   nil,
+			expectedContext: []byte(`a.txt file.`),
+		},
+		{
+			filename:        "test/data/embed/b.txt",
+			expectedError:   nil,
+			expectedContext: []byte(`b.txt file.`),
+		},
+		{
+			filename:        "test/data/embed/c.txt",
+			expectedError:   nil,
+			expectedContext: []byte(`c.txt file.`),
+		},
+		{
+			filename:        "test/data/embed/VERSION",
+			expectedError:   nil,
+			expectedContext: []byte(`v1.2.1`),
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := GetFileContentWithFS(efs, grid.filename)
+		if err != nil {
+			assert.Equal(t, grid.expectedError.Error(), err.Error())
+		} else {
+			assert.Equal(t, grid.expectedContext, actual)
+		}
 	}
 }

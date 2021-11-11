@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // FileIsExists Check file is exists.
@@ -89,4 +90,28 @@ func GetFileContentWithFS(fs embed.FS, filename string) ([]byte, error) {
 	}
 
 	return data, nil
+}
+
+// Touch Create file, if parent directory not exists, then create.
+func Touch(filename string) error {
+	_, err := os.Stat(filename)
+	if err != nil && os.IsNotExist(err) {
+		err := os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+		if err != nil {
+			return err
+		}
+
+		f, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+	} else {
+		now := time.Now().Local()
+		if err := os.Chtimes(filename, now, now); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

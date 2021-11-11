@@ -201,3 +201,30 @@ func TestGetFileContentWithFS(t *testing.T) {
 		}
 	}
 }
+
+func TestTouch(t *testing.T) {
+	grids := []struct {
+		filename string
+	}{
+		{
+			filename: "test/data/touch/.history",
+		},
+		{
+			filename: "test/data/touch/helloshaohua/.keep",
+		},
+		{
+			filename: "test/data/touch/tom/.history",
+		},
+		{
+			filename: "test/data/touch/lily/.history",
+		},
+		{
+			filename: "test/data/touch/kitty/hello/world/.history",
+		},
+	}
+
+	for _, grid := range grids {
+		err := Touch(grid.filename)
+		assert.NoError(t, err)
+	}
+}

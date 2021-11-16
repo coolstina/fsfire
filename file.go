@@ -1,6 +1,7 @@
 package fsfire
 
 import (
+	"bytes"
 	"embed"
 	"os"
 	"path/filepath"
@@ -114,4 +115,19 @@ func Touch(filename string) error {
 	}
 
 	return nil
+}
+
+// Filename Gets the file or directory name.
+func Filename(path string) (string, bool, error) {
+	stat, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
+		return "", false, err
+	}
+
+	if stat.IsDir() {
+		return filepath.Base(strings.TrimRight(path, string(os.PathSeparator))), true, nil
+	}
+
+	str := []byte(filepath.Base(path))
+	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
 }

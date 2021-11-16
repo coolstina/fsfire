@@ -1,6 +1,7 @@
 package fsfire
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -68,4 +69,29 @@ func IsNotExists(path string) bool {
 // MkdirAll creates a directory named path.
 func MkdirAll(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
+}
+
+// ReadDir Get the directory file name by recursive reading.
+func ReadDir(path string, result []string) ([]string, error) {
+	if result == nil {
+		result = make([]string, 0)
+	}
+
+	dir, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, f := range dir {
+		if f.IsDir() {
+			result, err = ReadDir(filepath.Join(path, f.Name()), result)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			result = append(result, filepath.Join(path, f.Name()))
+		}
+	}
+
+	return result, nil
 }

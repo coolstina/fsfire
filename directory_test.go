@@ -55,3 +55,25 @@ func TestNotExistsMkdir(t *testing.T) {
 		assert.NoError(t, err)
 	}
 }
+
+func TestReadDir(t *testing.T) {
+	grids := []struct {
+		path  string
+		error error
+	}{
+		{
+			path:  "test",
+			error: nil,
+		},
+		{
+			path:  ".",
+			error: nil,
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := ReadDir(grid.path, nil)
+		assert.NoError(t, err)
+		assert.Greater(t, len(actual), 0)
+	}
+}

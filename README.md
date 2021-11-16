@@ -1,36 +1,16 @@
 # fs
 
-Go文件系统相关操作包.
+Go File system-related operations.
 
-## 快速开始
+## Installation
 
 ```shell script
 $ go get -u github.com/coolstina/fsfire
 ```
 
-## 功能实现
 
-### 清除类
+## How to use？
 
-- 清除文件空行.
-- 清除字节数组空行.
-- 根据指定内容清除文件指定行.
-- 根据指定内容清除字节数组指定行.
+It's very simple to use, just out of the box, and you can view the documentation through [GoDoc](https://pkg.go.dev/github.com/coolstina/fsfire).
 
-### 统计类
-
-- 统计文件行数.
-- 统计字节数组行数.
-- 统计文件字符个数.
-- 统计字节数组字符个数.
-
-### 文件 
-
-- 检测文件是否存在.
-- 检测文件路径是否是目录.
-- 获取文件路径最后一个文件目录名称.
-- 创建文件名称(包含文件扩展名).
-- 获取文件扩展名.
-- 清除文件中特定内容之前的内容(可以包含特定内容).
-- 清除文件中特定内容之后的内容(可以包含特定内容).
 

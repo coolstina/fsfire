@@ -228,3 +228,32 @@ func TestTouch(t *testing.T) {
 		assert.NoError(t, err)
 	}
 }
+
+func TestFilename(t *testing.T) {
+	grids := []struct {
+		path     string
+		dir      bool
+		filename string
+		err      error
+	}{
+		{
+			path:     "test/data/assets/images/helloshaohua.jpeg",
+			dir:      false,
+			filename: "helloshaohua",
+			err:      nil,
+		},
+		{
+			path:     "test/data/assets/images/",
+			dir:      true,
+			filename: "images",
+			err:      nil,
+		},
+	}
+
+	for _, grid := range grids {
+		filename, dir, err := Filename(grid.path)
+		assert.Equal(t, grid.filename, filename)
+		assert.Equal(t, grid.dir, dir)
+		assert.Equal(t, grid.err, err)
+	}
+}

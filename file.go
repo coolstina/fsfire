@@ -23,8 +23,8 @@ import (
 	"time"
 )
 
-// FileIsExists Check file is exists.
-func FileIsExists(filename string) bool {
+// FileNotExists Check file is exists.
+func FileNotExists(filename string) bool {
 	_, err := os.Stat(filename)
 	if err != nil && os.IsNotExist(err) {
 		return false
@@ -32,32 +32,21 @@ func FileIsExists(filename string) bool {
 	return true
 }
 
-// FileIsDir Check file is directory.
-func FileIsDir(filename string) (bool, error) {
+// IsFile Checks whether the specified file name is a file.
+func IsFile(filename string) (bool, error) {
 	stat, err := os.Stat(filename)
 	if err != nil {
 		return false, err
 	}
 
 	if stat.IsDir() {
-		return true, nil
+		return false, nil
 	}
-	return false, nil
+
+	return true, nil
 }
 
-// LastDirName Gets filename the last directory name.
-func LastDirName(filename string) string {
-	sli := strings.Split(filepath.Dir(filename), string(os.PathSeparator))
-	if len(sli) > 1 {
-		return sli[len(sli)-1]
-	}
-	if len(sli) == 1 {
-		return sli[0]
-	}
-	return ""
-}
-
-// CreateFilename CreateFilename generate filename.
+// CreateFilename Create the filename.
 func CreateFilename(filename, extension string, ops ...Option) string {
 	options := options{
 		trim: true,
@@ -131,8 +120,8 @@ func Touch(filename string) error {
 	return nil
 }
 
-// Filename Gets the file or directory name.
-func Filename(path string) (string, bool, error) {
+// GetFileOrDirName Gets the file or directory name.
+func GetFileOrDirName(path string) (string, bool, error) {
 	stat, err := os.Stat(path)
 	if err != nil && os.IsNotExist(err) {
 		return "", false, err
@@ -144,4 +133,9 @@ func Filename(path string) (string, bool, error) {
 
 	str := []byte(filepath.Base(path))
 	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
+}
+
+// FilenameTrimPrefix Trim the filename prefix.
+func FilenameTrimPrefix(filename, prefix string) string {
+	return strings.TrimPrefix(filename, prefix)
 }

@@ -25,6 +25,11 @@ type options struct {
 	path               FSPath
 	baseDir            string
 	containsMarkString bool
+
+	// Whether the operation is force.
+	force bool
+
+	trimPrefixStr string
 }
 
 type optionFunc func(*options)
@@ -47,7 +52,7 @@ func WithSpecificBaseDir(baseDir string) Option {
 	})
 }
 
-// WithSpecificFSPath Override the original value by specifying filepath.
+// WithSpecificFileExtension WithSpecificFSPath Override the original value by specifying filepath.
 func WithSpecificFileExtension(extension FileExtension) Option {
 	return optionFunc(func(ops *options) {
 		ops.extension = extension
@@ -72,5 +77,12 @@ func WithSpecificTrimOriginalFileExtension(trim bool) Option {
 func WithSpecificContainsMarkString(contains bool) Option {
 	return optionFunc(func(ops *options) {
 		ops.containsMarkString = contains
+	})
+}
+
+// WithOriginalFileNameTrimPrefix WithSpecificContainsMarkString Override the original value by trimPrefixStr string.
+func WithOriginalFileNameTrimPrefix(str string) Option {
+	return optionFunc(func(ops *options) {
+		ops.trimPrefixStr = str
 	})
 }

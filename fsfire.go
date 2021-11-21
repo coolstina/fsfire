@@ -15,6 +15,6 @@
 package fsfire
 
 const (
-	// File name separator.
+	// GlobalSeparatorWithFileName File name separator.
 	GlobalSeparatorWithFileName = "."
 )

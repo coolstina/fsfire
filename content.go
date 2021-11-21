@@ -16,7 +16,6 @@ package fsfire
 
 import (
 	"bytes"
-	"fmt"
 )
 
 // MarkContentPrefixClear Mark content prefix clear.
@@ -53,10 +52,8 @@ func MarkContentSuffixClear(data []byte, mark string, ops ...Option) []byte {
 	index := bytes.Index(data, []byte(mark))
 	if index > 0 {
 		if options.containsMarkString {
-			fmt.Printf("helloshaohua1")
 			return data[:index+(len([]byte(mark)))]
 		}
-		fmt.Printf("helloshaohua2")
 		return data[:index]
 	}
 	return data

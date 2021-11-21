@@ -61,7 +61,7 @@ func WithSpecificFileExtensionContainsDot(containsdot bool) Option {
 	})
 }
 
-// WithSpecificFileTrimOriginalExtension Override the original value by specifying dot.
+// WithSpecificTrimOriginalFileExtension WithSpecificFileTrimOriginalExtension Override the original value by specifying dot.
 func WithSpecificTrimOriginalFileExtension(trim bool) Option {
 	return optionFunc(func(ops *options) {
 		ops.trim = trim

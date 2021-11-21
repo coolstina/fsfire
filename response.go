@@ -24,7 +24,7 @@ func GetResponseHeader(resp http.ResponseWriter, field string) string {
 	return resp.Header().Get(field)
 }
 
-// GetResponseHeader Gets response header field value,
+// GetResponseHeaderFunc GetResponseHeader Gets response header field value,
 // processing of response field values by attaching custom functions.
 func GetResponseHeaderFunc(resp http.ResponseWriter, field string, process func(val string) string) string {
 	return process(GetResponseHeader(resp, field))

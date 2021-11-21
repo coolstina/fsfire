@@ -23,86 +23,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFileIsExists(t *testing.T) {
-	grids := []struct {
-		filename       string
-		expectedExists bool
-	}{
-		{
-			filename:       "create.go",
-			expectedExists: true,
-		},
-		{
-			filename:       "none.go",
-			expectedExists: false,
-		},
-	}
-
-	for _, grid := range grids {
-		actual := FileIsExists(grid.filename)
-		assert.Equal(t, grid.expectedExists, actual)
-	}
-}
-
-func TestFileIsDir(t *testing.T) {
+func TestFileNotExists(t *testing.T) {
 	grids := []struct {
 		filename string
-		error    error
 		expected bool
 	}{
 		{
-			filename: "test",
-			error:    nil,
+			filename: "create.go",
 			expected: true,
 		},
 		{
 			filename: "none.go",
-			error:    errors.New("stat none.go: no such file or directory"),
-			expected: false,
-		},
-		{
-			filename: "create.go",
-			error:    nil,
 			expected: false,
 		},
 	}
 
 	for _, grid := range grids {
-		actual, err := FileIsDir(grid.filename)
-		if err != nil {
-			assert.Equal(t, grid.error.Error(), err.Error())
-		} else {
-			assert.Equal(t, grid.expected, actual)
-		}
-	}
-}
-
-func TestLastDirName(t *testing.T) {
-
-	grids := []struct {
-		filename string
-		expected string
-	}{
-		{
-			filename: "hello/world/helloshaohua/a.txt",
-			expected: "helloshaohua",
-		},
-		{
-			filename: "hello/world/a.txt",
-			expected: "world",
-		},
-		{
-			filename: "helloshaohua/a.txt",
-			expected: "helloshaohua",
-		},
-		{
-			filename: "a.txt",
-			expected: ".",
-		},
-	}
-
-	for _, grid := range grids {
-		actual := LastDirName(grid.filename)
+		actual := FileNotExists(grid.filename)
 		assert.Equal(t, grid.expected, actual)
 	}
 }
@@ -265,9 +202,71 @@ func TestFilename(t *testing.T) {
 	}
 
 	for _, grid := range grids {
-		filename, dir, err := Filename(grid.path)
+		filename, dir, err := GetFileOrDirName(grid.path)
 		assert.Equal(t, grid.filename, filename)
 		assert.Equal(t, grid.dir, dir)
 		assert.Equal(t, grid.err, err)
+	}
+}
+
+func TestIsFile(t *testing.T) {
+	grids := []struct {
+		filename string
+		error    error
+		expected bool
+	}{
+		{
+			filename: "test",
+			error:    nil,
+			expected: false,
+		},
+		{
+			filename: "none.go",
+			error:    errors.New("stat none.go: no such file or directory"),
+			expected: false,
+		},
+		{
+			filename: "create.go",
+			error:    nil,
+			expected: true,
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := IsFile(grid.filename)
+		if err != nil {
+			assert.Equal(t, grid.error.Error(), err.Error())
+		} else {
+			assert.Equal(t, grid.expected, actual)
+		}
+	}
+}
+
+func TestFilenameTrimPrefix(t *testing.T) {
+	grids := []struct {
+		filename string
+		prefix   string
+		expected string
+	}{
+		{
+			filename: "D:/Users/hello/world/hello.txt",
+			prefix:   "D:/Users/hello/world",
+			expected: "/hello.txt",
+		},
+		{
+			filename: "/Users/hello/world/hello.txt",
+			prefix:   "/Users/hello/",
+			expected: "world/hello.txt",
+		},
+		{
+			filename: "/Users/hello/world/hello.txt",
+			prefix:   "/Users/",
+			expected: "hello/world/hello.txt",
+		},
+	}
+
+	for _, grid := range grids {
+		actual := FilenameTrimPrefix(grid.filename, grid.prefix)
+		assert.Equal(t, grid.expected, actual)
 	}
 }

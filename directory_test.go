@@ -15,6 +15,7 @@
 package fsfire
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -70,6 +71,97 @@ func TestNotExistsMkdir(t *testing.T) {
 	}
 }
 
+func TestLastDirName(t *testing.T) {
+	grids := []struct {
+		filename string
+		expected string
+	}{
+		{
+			filename: "hello/world/helloshaohua/a.txt",
+			expected: "helloshaohua",
+		},
+		{
+			filename: "hello/world/a.txt",
+			expected: "world",
+		},
+		{
+			filename: "helloshaohua/a.txt",
+			expected: "helloshaohua",
+		},
+		{
+			filename: "a.txt",
+			expected: ".",
+		},
+	}
+
+	for _, grid := range grids {
+		actual := LastDirName(grid.filename)
+		assert.Equal(t, grid.expected, actual)
+	}
+}
+
+func TestIsDir(t *testing.T) {
+	grids := []struct {
+		filename string
+		error    error
+		expected bool
+	}{
+		{
+			filename: "test",
+			error:    nil,
+			expected: true,
+		},
+		{
+			filename: "none.go",
+			error:    errors.New("stat none.go: no such file or directory"),
+			expected: false,
+		},
+		{
+			filename: "create.go",
+			error:    nil,
+			expected: false,
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := IsDir(grid.filename)
+		if err != nil {
+			assert.Equal(t, grid.error.Error(), err.Error())
+		} else {
+			assert.Equal(t, grid.expected, actual)
+		}
+	}
+}
+
+func TestDirNotExists(t *testing.T) {
+	grids := []struct {
+		path     string
+		expected bool
+	}{
+		{
+			path:     "test",
+			expected: false,
+		},
+		{
+			path:     "hello",
+			expected: true,
+		},
+		{
+			path:     "world",
+			expected: true,
+		},
+		{
+			path:     "hello/world/hello-world",
+			expected: true,
+		},
+	}
+
+	for _, grid := range grids {
+		actual := DirNotExists(grid.path)
+		assert.Equal(t, grid.expected, actual, "want %t but got %t, path: %s\n", grid.expected, actual, grid.path)
+	}
+}
+
 func TestReadDir(t *testing.T) {
 	grids := []struct {
 		path  string
@@ -89,5 +181,71 @@ func TestReadDir(t *testing.T) {
 		actual, err := ReadDir(grid.path, nil)
 		assert.NoError(t, err)
 		assert.Greater(t, len(actual), 0)
+	}
+}
+
+func TestWriteDir(t *testing.T) {
+	grids := []struct {
+		src string
+		dst string
+		ops []Option
+	}{
+		// Contains the hierarchy of copy directories.
+		{
+			src: "test/data",
+			dst: "filesystem/helloworld",
+			ops: nil,
+		},
+
+		// Does not include the hierarchy of copied directories.
+		{
+			src: "test/data",
+			dst: "filesystem/shaohua",
+			ops: []Option{
+				WithOriginalFileNameTrimPrefix("test/data"),
+			},
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := ReadDir(grid.src, nil)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, actual)
+
+		err = WriteDir(grid.dst, actual, grid.ops...)
+		assert.NoError(t, err)
+	}
+}
+
+func TestCopy(t *testing.T) {
+	grids := []struct {
+		src string
+		dst string
+		ops []Option
+	}{
+		// Contains the hierarchy of copy directories.
+		{
+			src: "test/data",
+			dst: "filesystem/helloworld",
+			ops: nil,
+		},
+
+		// Does not include the hierarchy of copied directories.
+		{
+			src: "test/data",
+			dst: "filesystem/shaohua",
+			ops: []Option{
+				WithOriginalFileNameTrimPrefix("test/data"),
+			},
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := ReadDir(grid.src, nil)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, actual)
+
+		err = WriteDir(grid.dst, actual, grid.ops...)
+		assert.NoError(t, err)
 	}
 }

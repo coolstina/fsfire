@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"bytes"
 	"embed"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -142,7 +143,8 @@ func FilenameTrimPrefix(filename, prefix string) string {
 }
 
 // GetFileContentWithStringSlice Gets the file or directory name.
-func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, error) {
+
+func GetFileContentWithStringSlice(filename string, ops ...Option) ([][]byte, error) {
 	options := &options{}
 
 	for _, o := range ops {
@@ -155,21 +157,30 @@ func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, er
 	}
 	defer open.Close()
 
-	content := make([]string, 0, 256)
-	scanner := bufio.NewScanner(open)
-	for scanner.Scan() {
-		text := scanner.Text()
+	var content = make([][]byte, 0, 256)
+	var reader = bufio.NewReader(open)
+	var prefix = bytes.Buffer{}
+	for {
+		data, isPrefix, err := reader.ReadLine()
+		if err == io.EOF {
+			break
+		}
 
 		if options.ignoreBlankLine {
-			if strings.TrimSpace(text) == "" {
+			if len(bytes.TrimSpace(data)) == 0 {
 				continue
 			}
 		}
 
-		content = append(content, text)
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, err
+		if isPrefix {
+			prefix.Write(data)
+			continue
+		} else {
+			prefix.Write(data)
+		}
+
+		content = append(content, prefix.Bytes())
+		prefix.Reset()
 	}
 
 	return content, nil

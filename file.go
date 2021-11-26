@@ -142,9 +142,8 @@ func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)
 }
 
-// GetFileContentWithStringSlice Gets the file or directory name.
-
-func GetFileContentWithStringSlice(filename string, ops ...Option) ([][]byte, error) {
+// GetFileContentWithBytesSlice Gets the file or directory name.
+func GetFileContentWithBytesSlice(filename string, ops ...Option) ([][]byte, error) {
 	options := &options{}
 
 	for _, o := range ops {

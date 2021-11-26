@@ -271,7 +271,7 @@ func TestFilenameTrimPrefix(t *testing.T) {
 	}
 }
 
-func TestGetFileContentWithStringSlice(t *testing.T) {
+func TestGetFileContentWithBytesSlice(t *testing.T) {
 	grids := []struct {
 		filename string
 		ops      []Option
@@ -292,7 +292,7 @@ func TestGetFileContentWithStringSlice(t *testing.T) {
 	}
 
 	for _, grid := range grids {
-		actual, err := GetFileContentWithStringSlice(grid.filename, grid.ops...)
+		actual, err := GetFileContentWithBytesSlice(grid.filename, grid.ops...)
 		assert.NoError(t, err)
 		assert.Len(t, actual, grid.expected)
 	}

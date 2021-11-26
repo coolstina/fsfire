@@ -270,3 +270,30 @@ func TestFilenameTrimPrefix(t *testing.T) {
 		assert.Equal(t, grid.expected, actual)
 	}
 }
+
+func TestGetFileContentWithStringSlice(t *testing.T) {
+	grids := []struct {
+		filename string
+		ops      []Option
+		expected int
+	}{
+		{
+			filename: ".gitignore",
+			ops:      nil,
+			expected: 21,
+		},
+		{
+			filename: ".gitignore",
+			ops: []Option{
+				WithIgnoreBlankLine(true),
+			},
+			expected: 17,
+		},
+	}
+
+	for _, grid := range grids {
+		actual, err := GetFileContentWithStringSlice(grid.filename, grid.ops...)
+		assert.NoError(t, err)
+		assert.Len(t, actual, grid.expected)
+	}
+}

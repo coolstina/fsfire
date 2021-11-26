@@ -29,7 +29,11 @@ type options struct {
 	// Whether the operation is force.
 	force bool
 
+	// Trim specify prefix string.
 	trimPrefixStr string
+
+	// Whether blank lines are ignored.
+	ignoreBlankLine bool
 }
 
 type optionFunc func(*options)
@@ -84,5 +88,12 @@ func WithSpecificContainsMarkString(contains bool) Option {
 func WithOriginalFileNameTrimPrefix(str string) Option {
 	return optionFunc(func(ops *options) {
 		ops.trimPrefixStr = str
+	})
+}
+
+// WithIgnoreBlankLine Specify whether blank lines are ignored.
+func WithIgnoreBlankLine(ignored bool) Option {
+	return optionFunc(func(ops *options) {
+		ops.ignoreBlankLine = ignored
 	})
 }

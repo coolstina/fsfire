@@ -15,6 +15,7 @@
 package fsfire
 
 import (
+	"bufio"
 	"bytes"
 	"embed"
 	"os"
@@ -138,4 +139,38 @@ func GetFileOrDirName(path string) (string, bool, error) {
 // FilenameTrimPrefix Trim the filename prefix.
 func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)
+}
+
+// GetFileContentWithStringSlice Gets the file or directory name.
+func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, error) {
+	options := &options{}
+
+	for _, o := range ops {
+		o.apply(options)
+	}
+
+	open, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer open.Close()
+
+	content := make([]string, 0, 256)
+	scanner := bufio.NewScanner(open)
+	for scanner.Scan() {
+		text := scanner.Text()
+
+		if options.ignoreBlankLine {
+			if strings.TrimSpace(text) == "" {
+				continue
+			}
+		}
+
+		content = append(content, text)
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return content, nil
 }

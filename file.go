@@ -142,8 +142,8 @@ func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)
 }
 
-// GetFileContentWithBytesSlice Gets the file or directory name.
-func GetFileContentWithBytesSlice(filename string, ops ...Option) ([][]byte, error) {
+// GetFileContentWithStringSlice Gets the file or directory name.
+func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, error) {
 	options := &options{}
 
 	for _, o := range ops {
@@ -156,7 +156,7 @@ func GetFileContentWithBytesSlice(filename string, ops ...Option) ([][]byte, err
 	}
 	defer open.Close()
 
-	var content = make([][]byte, 0, 256)
+	var content = make([]string, 0, 256)
 	var reader = bufio.NewReader(open)
 	var prefix = bytes.Buffer{}
 	for {
@@ -178,7 +178,7 @@ func GetFileContentWithBytesSlice(filename string, ops ...Option) ([][]byte, err
 			prefix.Write(data)
 		}
 
-		content = append(content, prefix.Bytes())
+		content = append(content, prefix.String())
 		prefix.Reset()
 	}
 

@@ -18,9 +18,11 @@ import (
 	"bufio"
 	"bytes"
 	"embed"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -48,7 +50,7 @@ func IsFile(filename string) (bool, error) {
 	return true, nil
 }
 
-// CreateFilename Create the filename.
+// CreateFilename Create the content.
 func CreateFilename(filename, extension string, ops ...Option) string {
 	options := options{
 		trim: true,
@@ -137,12 +139,12 @@ func GetFileOrDirName(path string) (string, bool, error) {
 	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
 }
 
-// FilenameTrimPrefix Trim the filename prefix.
+// FilenameTrimPrefix Trim the content prefix.
 func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)
 }
 
-// GetFileContentWithStringSlice Gets the file or directory name.
+// GetFileContentWithStringSlice Get the file contents as a string for slice.
 func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, error) {
 	options := &options{}
 
@@ -179,6 +181,61 @@ func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, er
 		}
 
 		content = append(content, prefix.String())
+		prefix.Reset()
+	}
+
+	return content, nil
+}
+
+// GetContentWithRegularExpression Get the string content into slice's string, using a regular expression.
+func GetContentWithRegularExpression(str, pattern string, ops ...Option) ([]string, error) {
+	if str == "" {
+		return nil, fmt.Errorf("str parameter can't empty")
+	}
+
+	compile, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
+	}
+
+	options := &options{}
+	for _, o := range ops {
+		o.apply(options)
+	}
+
+	var r = bytes.NewReader([]byte(str))
+	var content = make([]string, 0, 256)
+	var reader = bufio.NewReader(r)
+	var prefix = bytes.Buffer{}
+	for {
+		data, isPrefix, err := reader.ReadLine()
+		if err == io.EOF {
+			break
+		}
+
+		if options.ignoreBlankLine {
+			if len(bytes.TrimSpace(data)) == 0 {
+				continue
+			}
+		}
+
+		if isPrefix {
+			prefix.Write(data)
+			continue
+		} else {
+			prefix.Write(data)
+		}
+
+		if !compile.Match(prefix.Bytes()) {
+			prefix.Reset()
+			continue
+		}
+
+		content = append(
+			content,
+			compile.FindString(prefix.String()),
+		)
+
 		prefix.Reset()
 	}
 

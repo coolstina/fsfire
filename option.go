@@ -22,7 +22,7 @@ type options struct {
 	extension          FileExtension
 	dot                bool
 	trim               bool
-	path               FSPath
+	path               FileSystemPath
 	baseDir            string
 	containsMarkString bool
 
@@ -43,7 +43,7 @@ func (o optionFunc) apply(ops *options) {
 }
 
 // WithSpecificFSPath Override the original value by specifying filepath.
-func WithSpecificFSPath(path FSPath) Option {
+func WithSpecificFSPath(path FileSystemPath) Option {
 	return optionFunc(func(ops *options) {
 		ops.path = path
 	})

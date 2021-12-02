@@ -14,17 +14,17 @@
 
 package fsfire
 
-type FSPath string
+type FileSystemPath string
 
-func (p FSPath) String() string {
+func (p FileSystemPath) String() string {
 	return string(p)
 }
 
-const GlobalDefaultDir FSPath = "static"
+const GlobalDefaultDir FileSystemPath = "static"
 
 // Assets files save path definition.
 const (
-	AssetsSavePathForDatabase FSPath = "static/assets/database"
-	AssetsSavePathForExcel    FSPath = "static/assets/excel"
-	AssetsSavePathForCSV      FSPath = "static/assets/csv"
+	AssetsSavePathForDatabase FileSystemPath = "static/assets/database"
+	AssetsSavePathForExcel    FileSystemPath = "static/assets/excel"
+	AssetsSavePathForCSV      FileSystemPath = "static/assets/csv"
 )

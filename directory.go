@@ -28,7 +28,7 @@ func RuntimeMasterDir() string {
 	return base
 }
 
-func MustGetFilePathWithFSPath(baseDir string, ops ...Option) string {
+func MustGetFilePathWithFileSystemPath(baseDir string, ops ...Option) string {
 	options := options{
 		path: GlobalDefaultDir,
 	}
@@ -45,7 +45,8 @@ func MustGetFilePathWithFSPath(baseDir string, ops ...Option) string {
 	return path
 }
 
-func GetFilePathWithFSPath(baseDir string, ops ...Option) (string, error) {
+// GetFilePathWithFileSystemPath Get a file path with filesystem path.
+func GetFilePathWithFileSystemPath(baseDir string, ops ...Option) (string, error) {
 	options := options{
 		path: GlobalDefaultDir,
 	}

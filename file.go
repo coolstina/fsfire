@@ -50,7 +50,7 @@ func IsFile(filename string) (bool, error) {
 	return true, nil
 }
 
-// CreateFilename Create the content.
+// CreateFilename Create the filename.
 func CreateFilename(filename, extension string, ops ...Option) string {
 	options := options{
 		trim: true,
@@ -139,7 +139,7 @@ func GetFileOrDirName(path string) (string, bool, error) {
 	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
 }
 
-// FilenameTrimPrefix Trim the content prefix.
+// FilenameTrimPrefix Trim the filename prefix.
 func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)
 }

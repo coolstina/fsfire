@@ -18,6 +18,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -293,6 +294,29 @@ func TestGetFileContentWithStringSlice(t *testing.T) {
 
 	for _, grid := range grids {
 		actual, err := GetFileContentWithStringSlice(grid.filename, grid.ops...)
+		assert.NoError(t, err)
+		assert.Len(t, actual, grid.expected)
+	}
+}
+
+func TestGetContentWithRegularExpression(t *testing.T) {
+	grids := []struct {
+		filename   string
+		expression string
+		expected   int
+	}{
+		{
+			filename:   "test/data/regular/app.log",
+			expression: `\{"connnect"\s?:\s?.*,\s?"file_name"\s?:\s?".*"\}`,
+			expected:   1,
+		},
+	}
+
+	for _, grid := range grids {
+		data, err := ioutil.ReadFile(grid.filename)
+		assert.NoError(t, err)
+
+		actual, err := GetContentWithRegularExpression(string(data), grid.expression)
 		assert.NoError(t, err)
 		assert.Len(t, actual, grid.expected)
 	}

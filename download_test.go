@@ -27,7 +27,7 @@ import (
 func TestDownloadFile(t *testing.T) {
 	grids := []struct {
 		baseDir     string
-		savePath    FSPath
+		savePath    FileSystemPath
 		extension   FileExtension
 		filename    string
 		response    *httptest.ResponseRecorder

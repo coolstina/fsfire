@@ -24,7 +24,7 @@ import (
 func TestCreateFile(t *testing.T) {
 	grids := []struct {
 		baseDir                   string
-		savePath                  FSPath
+		savePath                  FileSystemPath
 		filename                  string
 		extension                 FileExtension
 		trimOriginalFileExtension bool

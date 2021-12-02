@@ -40,7 +40,7 @@ func CreateFile(filename string, data []byte, ops ...Option) (string, error) {
 		o.apply(&options)
 	}
 
-	path, err := GetFilePathWithFSPath(options.baseDir, ops...)
+	path, err := GetFilePathWithFileSystemPath(options.baseDir, ops...)
 	if err != nil {
 		return "", err
 	}

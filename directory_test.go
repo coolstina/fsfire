@@ -21,6 +21,64 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsNotExists(t *testing.T) {
+	grids := []struct {
+		filename string
+		expected bool
+	}{
+		{
+			filename: "create.go",
+			expected: false,
+		},
+		{
+			filename: "none.go",
+			expected: true,
+		},
+	}
+
+	for _, grid := range grids {
+		actual := IsNotExists(grid.filename)
+		assert.Equal(t, grid.expected, actual)
+	}
+}
+
+func TestIsNotExistsWithEmbedFS(t *testing.T) {
+	grids := []struct {
+		filename string
+		expected bool
+	}{
+		{
+			filename: "test/data/embed/a.txt",
+			expected: false,
+		},
+		{
+			filename: "test/data/embed/b.txt",
+			expected: false,
+		},
+		{
+			filename: "test/data/embed/c.txt",
+			expected: false,
+		},
+		{
+			filename: "test/data/embed/VERSION",
+			expected: false,
+		},
+		{
+			filename: "a.txt",
+			expected: true,
+		},
+		{
+			filename: "/hello/world/not-exists-file.txt",
+			expected: true,
+		},
+	}
+
+	for _, grid := range grids {
+		actual := IsNotExistsWithEmbedFS(efs, grid.filename)
+		assert.Equal(t, grid.expected, actual)
+	}
+}
+
 func TestMustNotExistsMkdir(t *testing.T) {
 	grids := []struct {
 		path  string

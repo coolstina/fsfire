@@ -30,7 +30,7 @@ const (
 // CreateZIPFileWithFilename CreateZIPFile Create ZIP file, return the storage path and error.
 // source parameter specifies a file or directory.
 func CreateZIPFileWithFilename(source string) (string, error) {
-	filename, dir, err := GetFileOrDirName(source)
+	filename, dir, err := GetFileOrDirectoryName(source)
 	if err != nil {
 		return "", err
 	}

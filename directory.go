@@ -15,6 +15,7 @@
 package fsfire
 
 import (
+	"embed"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -78,6 +79,15 @@ func NotExistsMkdir(path string) error {
 // Return FALSE if the file exists, TRUE otherwise.
 func IsNotExists(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return true
+	}
+	return false
+}
+
+// IsNotExistsWithEmbedFS check whether the target file or directory exists with embed.FS.
+// Return FALSE if the file exists, TRUE otherwise.
+func IsNotExistsWithEmbedFS(embeds embed.FS, path string) bool {
+	if _, err := embeds.ReadFile(path); os.IsNotExist(err) {
 		return true
 	}
 	return false

@@ -27,29 +27,6 @@ import (
 	"time"
 )
 
-// FileNotExists Check file is exists.
-func FileNotExists(filename string) bool {
-	_, err := os.Stat(filename)
-	if err != nil && os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-// IsFile Checks whether the specified file name is a file.
-func IsFile(filename string) (bool, error) {
-	stat, err := os.Stat(filename)
-	if err != nil {
-		return false, err
-	}
-
-	if stat.IsDir() {
-		return false, nil
-	}
-
-	return true, nil
-}
-
 // CreateFilename Create the filename.
 func CreateFilename(filename, extension string, ops ...Option) string {
 	options := options{
@@ -71,33 +48,18 @@ func CreateFilename(filename, extension string, ops ...Option) string {
 	return strings.Join([]string{filename, extension}, GlobalSeparatorWithFileName)
 }
 
-// GetFileExtension Gets the file extension.
-func GetFileExtension(filename string, ops ...Option) string {
-	options := options{
-		dot: false,
-	}
-
-	for _, o := range ops {
-		o.apply(&options)
-	}
-
-	return func() string {
-		ext := filepath.Ext(filename)
-		if !options.dot {
-			return strings.TrimPrefix(ext, ".")
-		}
-		return ext
-	}()
-}
-
-// GetFileContentWithFS Get file content with embed filesystem.
-func GetFileContentWithFS(fs embed.FS, filename string) ([]byte, error) {
-	data, err := fs.ReadFile(filename)
+// IsFile Checks whether the specified file name is a file.
+func IsFile(filename string) (bool, error) {
+	stat, err := os.Stat(filename)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	return data, nil
+	if stat.IsDir() {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 // Touch Create file, if parent directory not exists, then create.
@@ -124,8 +86,32 @@ func Touch(filename string) error {
 	return nil
 }
 
-// GetFileOrDirName Gets the file or directory name.
-func GetFileOrDirName(path string) (string, bool, error) {
+// FilenameTrimPrefix Trim the filename prefix.
+func FilenameTrimPrefix(filename, prefix string) string {
+	return strings.TrimPrefix(filename, prefix)
+}
+
+// GetFileExtension Gets the file extension.
+func GetFileExtension(filename string, ops ...Option) string {
+	options := options{
+		dot: false,
+	}
+
+	for _, o := range ops {
+		o.apply(&options)
+	}
+
+	return func() string {
+		ext := filepath.Ext(filename)
+		if !options.dot {
+			return strings.TrimPrefix(ext, ".")
+		}
+		return ext
+	}()
+}
+
+// GetFileOrDirectoryName Gets the file or directory name.
+func GetFileOrDirectoryName(path string) (string, bool, error) {
 	stat, err := os.Stat(path)
 	if err != nil && os.IsNotExist(err) {
 		return "", false, err
@@ -139,9 +125,14 @@ func GetFileOrDirName(path string) (string, bool, error) {
 	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
 }
 
-// FilenameTrimPrefix Trim the filename prefix.
-func FilenameTrimPrefix(filename, prefix string) string {
-	return strings.TrimPrefix(filename, prefix)
+// GetFileContentWithEmbedFS Get file content with embed filesystem.
+func GetFileContentWithEmbedFS(fs embed.FS, filename string) ([]byte, error) {
+	data, err := fs.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // GetFileContentWithStringSlice Get the file contents as a string for slice.

@@ -24,27 +24,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFileNotExists(t *testing.T) {
-	grids := []struct {
-		filename string
-		expected bool
-	}{
-		{
-			filename: "create.go",
-			expected: true,
-		},
-		{
-			filename: "none.go",
-			expected: false,
-		},
-	}
-
-	for _, grid := range grids {
-		actual := FileNotExists(grid.filename)
-		assert.Equal(t, grid.expected, actual)
-	}
-}
-
 func TestCreateFilename(t *testing.T) {
 	grids := []struct {
 		filename  string
@@ -111,7 +90,7 @@ func TestGetFileExtension(t *testing.T) {
 //go:embed test/data/embed
 var efs embed.FS
 
-func TestGetFileContentWithFS(t *testing.T) {
+func TestGetFileContentWithEmbedFS(t *testing.T) {
 	grids := []struct {
 		filename        string
 		expectedError   error
@@ -145,7 +124,7 @@ func TestGetFileContentWithFS(t *testing.T) {
 	}
 
 	for _, grid := range grids {
-		actual, err := GetFileContentWithFS(efs, grid.filename)
+		actual, err := GetFileContentWithEmbedFS(efs, grid.filename)
 		if err != nil {
 			assert.Equal(t, grid.expectedError.Error(), err.Error())
 		} else {
@@ -181,7 +160,7 @@ func TestTouch(t *testing.T) {
 	}
 }
 
-func TestFilename(t *testing.T) {
+func TestGetFileOrDirectoryName(t *testing.T) {
 	grids := []struct {
 		path     string
 		dir      bool
@@ -203,7 +182,7 @@ func TestFilename(t *testing.T) {
 	}
 
 	for _, grid := range grids {
-		filename, dir, err := GetFileOrDirName(grid.path)
+		filename, dir, err := GetFileOrDirectoryName(grid.path)
 		assert.Equal(t, grid.filename, filename)
 		assert.Equal(t, grid.dir, dir)
 		assert.Equal(t, grid.err, err)

@@ -86,6 +86,40 @@ func Touch(filename string) error {
 	return nil
 }
 
+// Truncate changes the size of the file.
+// It does not change the I/O offset.
+// If there is an error, it will be of type *PathError.
+func Truncate(filename string, size int64) error {
+	if !IsNotExists(filename) {
+		actual, err := IsFile(filename)
+		if err != nil {
+			return err
+		}
+		if !actual {
+			return fmt.Errorf("filename %s not a file", filename)
+		}
+
+		open, err := os.OpenFile(filename, os.O_WRONLY, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		defer open.Close()
+
+		info, err := open.Stat()
+		if err != nil {
+			return err
+		}
+
+		if info.Size() > 0 {
+			if err := open.Truncate(size); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 // FilenameTrimPrefix Trim the filename prefix.
 func FilenameTrimPrefix(filename, prefix string) string {
 	return strings.TrimPrefix(filename, prefix)

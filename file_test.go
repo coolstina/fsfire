@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -157,6 +158,46 @@ func TestTouch(t *testing.T) {
 	for _, grid := range grids {
 		err := Touch(grid.filename)
 		assert.NoError(t, err)
+	}
+}
+
+func TestTruncate(t *testing.T) {
+	grids := []struct {
+		filename string
+		content  string
+		filesize int64
+	}{
+		{
+			filename: "test/data/truncate/helloshaohua.txt",
+			content:  `wu.shaohua@foxmail.com`,
+			filesize: 0,
+		},
+		{
+			filename: "test/data/truncate/users.txt",
+			content: `张三
+李四
+王五`,
+			filesize: 0,
+		},
+	}
+
+	for _, grid := range grids {
+		err := ioutil.WriteFile(grid.filename, []byte(grid.content), os.ModePerm)
+		assert.NoError(t, err)
+
+		// Read file size on the truncate file after.
+		info, err := os.Stat(grid.filename)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, info.Size())
+
+		err = Truncate(grid.filename, 0)
+		assert.NoError(t, err)
+
+		// Read file size on the truncate file after.
+		info, err = os.Stat(grid.filename)
+		assert.NoError(t, err)
+		assert.NotNil(t, info)
+		assert.Equal(t, grid.filesize, info.Size())
 	}
 }
 

@@ -122,10 +122,78 @@ func TestGetFileContentWithEmbedFS(t *testing.T) {
 			expectedError:   nil,
 			expectedContext: []byte(`v1.2.1`),
 		},
+		{
+			filename:      "test/data/embed/readme.md",
+			expectedError: nil,
+			expectedContext: []byte(`# hello world
+
+I'm helloshaohua.`),
+		},
 	}
 
 	for _, grid := range grids {
-		actual, err := GetFileContentWithEmbedFS(efs, grid.filename)
+		actual, err := GetFileContentBytesWithEmbedFS(efs, grid.filename)
+		if err != nil {
+			assert.Equal(t, grid.expectedError.Error(), err.Error())
+		} else {
+			assert.Equal(t, grid.expectedContext, actual)
+		}
+	}
+}
+
+func TestGetFileContentStringSliceWithEmbedFS(t *testing.T) {
+	grids := []struct {
+		filename        string
+		option          Option
+		expectedError   error
+		expectedContext []string
+	}{
+		{
+			filename:        "a.txt",
+			expectedError:   fmt.Errorf(`open a.txt: file does not exist`),
+			expectedContext: []string{`a.txt file.`},
+		},
+		{
+			filename:        "test/data/embed/a.txt",
+			expectedError:   nil,
+			expectedContext: []string{`a.txt file.`},
+		},
+		{
+			filename:        "test/data/embed/b.txt",
+			expectedError:   nil,
+			expectedContext: []string{`b.txt file.`},
+		},
+		{
+			filename:        "test/data/embed/c.txt",
+			expectedError:   nil,
+			expectedContext: []string{`c.txt file.`},
+		},
+		{
+			filename:        "test/data/embed/VERSION",
+			expectedError:   nil,
+			expectedContext: []string{"v1.2.1"},
+		},
+		{
+			filename:        "test/data/embed/readme.md",
+			expectedError:   nil,
+			option:          WithIgnoreBlankLine(true),
+			expectedContext: []string{"# hello world", "I'm helloshaohua."},
+		},
+		{
+			filename:        "test/data/embed/readme.md",
+			expectedError:   nil,
+			option:          WithIgnoreBlankLine(false),
+			expectedContext: []string{"# hello world", "", "I'm helloshaohua."},
+		},
+	}
+
+	for _, grid := range grids {
+		options := make([]Option, 0)
+		if grid.option != nil {
+			options = append(options, grid.option)
+		}
+
+		actual, err := GetFileContentStringSliceWithEmbedFS(efs, grid.filename, options...)
 		if err != nil {
 			assert.Equal(t, grid.expectedError.Error(), err.Error())
 		} else {
@@ -313,7 +381,7 @@ func TestGetFileContentWithStringSlice(t *testing.T) {
 	}
 
 	for _, grid := range grids {
-		actual, err := GetFileContentWithStringSlice(grid.filename, grid.ops...)
+		actual, err := GetFileContentStringSliceWithFilename(grid.filename, grid.ops...)
 		assert.NoError(t, err)
 		assert.Len(t, actual, grid.expected)
 	}

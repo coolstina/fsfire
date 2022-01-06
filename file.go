@@ -192,7 +192,6 @@ func GetFileContentStringSliceWithEmbedFS(fs embed.FS, filename string, ops ...O
 		}
 
 		if options.ignoreBlankLine {
-			fmt.Printf("hello world")
 			if len(bytes.TrimSpace(data)) == 0 {
 				continue
 			}

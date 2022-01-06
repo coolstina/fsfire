@@ -159,8 +159,8 @@ func GetFileOrDirectoryName(path string) (string, bool, error) {
 	return string(str[0:bytes.LastIndexAny(str, ".")]), false, nil
 }
 
-// GetFileContentWithEmbedFS Get file content with embed filesystem.
-func GetFileContentWithEmbedFS(fs embed.FS, filename string) ([]byte, error) {
+// GetFileContentBytesWithEmbedFS Get file content bytes slice with embed filesystem.
+func GetFileContentBytesWithEmbedFS(fs embed.FS, filename string) ([]byte, error) {
 	data, err := fs.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -169,10 +169,52 @@ func GetFileContentWithEmbedFS(fs embed.FS, filename string) ([]byte, error) {
 	return data, nil
 }
 
-// GetFileContentWithStringSlice Get the file contents as a string for slice.
-func GetFileContentWithStringSlice(filename string, ops ...Option) ([]string, error) {
+// GetFileContentStringSliceWithEmbedFS Get file content string slice with embed filesystem.
+func GetFileContentStringSliceWithEmbedFS(fs embed.FS, filename string, ops ...Option) ([]string, error) {
 	options := &options{}
+	for _, o := range ops {
+		o.apply(options)
+	}
 
+	open, err := fs.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer open.Close()
+
+	var content = make([]string, 0, 256)
+	var reader = bufio.NewReader(open)
+	var prefix = bytes.Buffer{}
+	for {
+		data, isPrefix, err := reader.ReadLine()
+		if err == io.EOF {
+			break
+		}
+
+		if options.ignoreBlankLine {
+			fmt.Printf("hello world")
+			if len(bytes.TrimSpace(data)) == 0 {
+				continue
+			}
+		}
+
+		if isPrefix {
+			prefix.Write(data)
+			continue
+		} else {
+			prefix.Write(data)
+		}
+
+		content = append(content, prefix.String())
+		prefix.Reset()
+	}
+
+	return content, nil
+}
+
+// GetFileContentStringSliceWithFilename Get the file contents as a string for slice.
+func GetFileContentStringSliceWithFilename(filename string, ops ...Option) ([]string, error) {
+	options := &options{}
 	for _, o := range ops {
 		o.apply(options)
 	}

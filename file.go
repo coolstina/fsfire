@@ -211,6 +211,46 @@ func GetFileContentStringSliceWithEmbedFS(fs embed.FS, filename string, ops ...O
 	return content, nil
 }
 
+// GetFileContentStringSliceWithBuffer Get file content string slice with bytes buffer
+func GetFileContentStringSliceWithBuffer(buffer *bytes.Buffer, ops ...Option) ([]string, error) {
+	if buffer == nil {
+		return nil, fmt.Errorf("buffer cannot nil")
+	}
+
+	options := &options{}
+	for _, o := range ops {
+		o.apply(options)
+	}
+
+	var content = make([]string, 0, 256)
+	var reader = bufio.NewReader(buffer)
+	var prefix = bytes.Buffer{}
+	for {
+		data, isPrefix, err := reader.ReadLine()
+		if err == io.EOF {
+			break
+		}
+
+		if options.ignoreBlankLine {
+			if len(bytes.TrimSpace(data)) == 0 {
+				continue
+			}
+		}
+
+		if isPrefix {
+			prefix.Write(data)
+			continue
+		} else {
+			prefix.Write(data)
+		}
+
+		content = append(content, prefix.String())
+		prefix.Reset()
+	}
+
+	return content, nil
+}
+
 // GetFileContentStringSliceWithFilename Get the file contents as a string for slice.
 func GetFileContentStringSliceWithFilename(filename string, ops ...Option) ([]string, error) {
 	options := &options{}

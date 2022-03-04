@@ -15,6 +15,7 @@
 package fsfire
 
 import (
+	"bytes"
 	"embed"
 	"errors"
 	"fmt"
@@ -200,6 +201,29 @@ func TestGetFileContentStringSliceWithEmbedFS(t *testing.T) {
 			assert.Equal(t, grid.expectedContext, actual)
 		}
 	}
+}
+
+func TestGetFileContentStringSliceWithBuffer(t *testing.T) {
+	file := `hello world
+helloshaohua
+
+hello@shaohua.com`
+
+	// by default
+	buffer, err := GetFileContentStringSliceWithBuffer(
+		bytes.NewBufferString(file),
+	)
+	assert.NoError(t, err)
+	assert.Len(t, buffer, 4)
+
+	// ignore blank line
+	buffer, err = GetFileContentStringSliceWithBuffer(
+		bytes.NewBufferString(file),
+		WithIgnoreBlankLine(true),
+	)
+	assert.NoError(t, err)
+	assert.Len(t, buffer, 3)
+
 }
 
 func TestTouch(t *testing.T) {

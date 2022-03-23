@@ -42,42 +42,48 @@ func (o optionFunc) apply(ops *options) {
 	o(ops)
 }
 
-// WithSpecificFSPath Override the original value by specifying filepath.
-func WithSpecificFSPath(path FileSystemPath) Option {
+// WithSpecificFileSystemPath
+// Override the original value by specifying filepath.
+func WithSpecificFileSystemPath(path FileSystemPath) Option {
 	return optionFunc(func(ops *options) {
 		ops.path = path
 	})
 }
 
-// WithSpecificBaseDir Override the original value by specifying base directory.
+// WithSpecificBaseDir
+// Override the original value by specifying base directory.
 func WithSpecificBaseDir(baseDir string) Option {
 	return optionFunc(func(ops *options) {
 		ops.baseDir = baseDir
 	})
 }
 
-// WithSpecificFileExtension WithSpecificFSPath Override the original value by specifying filepath.
+// WithSpecificFileExtension
+// Override the original value by specifying file extension.
 func WithSpecificFileExtension(extension FileExtension) Option {
 	return optionFunc(func(ops *options) {
 		ops.extension = extension
 	})
 }
 
-// WithSpecificFileExtensionContainsDot Override the original value by specifying dot.
+// WithSpecificFileExtensionContainsDot
+// Override the original value by specifying dot.
 func WithSpecificFileExtensionContainsDot(containsdot bool) Option {
 	return optionFunc(func(ops *options) {
 		ops.dot = containsdot
 	})
 }
 
-// WithSpecificTrimOriginalFileExtension WithSpecificFileTrimOriginalExtension Override the original value by specifying dot.
+// WithSpecificTrimOriginalFileExtension
+// Override the original value by specifying trim.
 func WithSpecificTrimOriginalFileExtension(trim bool) Option {
 	return optionFunc(func(ops *options) {
 		ops.trim = trim
 	})
 }
 
-// WithSpecificContainsMarkString Override the original value by containsMarkString mark string.
+// WithSpecificContainsMarkString
+// Override the original value by containsMarkString mark string.
 func WithSpecificContainsMarkString(contains bool) Option {
 	return optionFunc(func(ops *options) {
 		ops.containsMarkString = contains

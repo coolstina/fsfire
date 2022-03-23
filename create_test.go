@@ -99,7 +99,7 @@ func TestCreateFile(t *testing.T) {
 
 	for _, grid := range grids {
 
-		ops := []Option{WithSpecificBaseDir(grid.baseDir), WithSpecificFSPath(grid.savePath)}
+		ops := []Option{WithSpecificBaseDir(grid.baseDir), WithSpecificFileSystemPath(grid.savePath)}
 		if grid.useExtension {
 			ops = append(ops, WithSpecificFileExtension(grid.extension))
 		}

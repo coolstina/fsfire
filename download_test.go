@@ -75,7 +75,7 @@ func TestDownloadFile(t *testing.T) {
 				return data
 			}(),
 			WithSpecificBaseDir(grid.baseDir),
-			WithSpecificFSPath(grid.savePath),
+			WithSpecificFileSystemPath(grid.savePath),
 			WithSpecificFileExtension(grid.extension),
 		)
 		contains := filepath.Join(grid.baseDir, grid.savePath.String())

@@ -19,9 +19,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestIsNotExists(t *testing.T) {
+func TestDirectorySuite(t *testing.T) {
+	suite.Run(t, &DirectorySuite{})
+}
+
+type DirectorySuite struct {
+	suite.Suite
+}
+
+func (suite *DirectorySuite) TestIsNotExists() {
 	grids := []struct {
 		filename string
 		expected bool
@@ -38,11 +47,11 @@ func TestIsNotExists(t *testing.T) {
 
 	for _, grid := range grids {
 		actual := IsNotExists(grid.filename)
-		assert.Equal(t, grid.expected, actual)
+		assert.Equal(suite.T(), grid.expected, actual)
 	}
 }
 
-func TestIsNotExistsWithEmbedFS(t *testing.T) {
+func (suite *DirectorySuite) TestIsNotExistsWithEmbedFS() {
 	grids := []struct {
 		filename string
 		expected bool
@@ -75,11 +84,11 @@ func TestIsNotExistsWithEmbedFS(t *testing.T) {
 
 	for _, grid := range grids {
 		actual := IsNotExistsWithEmbedFS(efs, grid.filename)
-		assert.Equal(t, grid.expected, actual)
+		assert.Equal(suite.T(), grid.expected, actual)
 	}
 }
 
-func TestMustNotExistsMkdir(t *testing.T) {
+func (suite *DirectorySuite) TestMustNotExistsMkdir() {
 	grids := []struct {
 		path  string
 		error error
@@ -100,11 +109,11 @@ func TestMustNotExistsMkdir(t *testing.T) {
 
 	for _, grid := range grids {
 		err := NotExistsMkdir(grid.path)
-		assert.NoError(t, err)
+		assert.NoError(suite.T(), err)
 	}
 }
 
-func TestNotExistsMkdir(t *testing.T) {
+func (suite *DirectorySuite) TestNotExistsMkdir() {
 	grids := []struct {
 		path  string
 		error error
@@ -125,11 +134,11 @@ func TestNotExistsMkdir(t *testing.T) {
 
 	for _, grid := range grids {
 		err := NotExistsMkdir(grid.path)
-		assert.NoError(t, err)
+		assert.NoError(suite.T(), err)
 	}
 }
 
-func TestLastDirName(t *testing.T) {
+func (suite *DirectorySuite) TestLastDirName() {
 	grids := []struct {
 		filename string
 		expected string
@@ -154,11 +163,11 @@ func TestLastDirName(t *testing.T) {
 
 	for _, grid := range grids {
 		actual := LastDirName(grid.filename)
-		assert.Equal(t, grid.expected, actual)
+		assert.Equal(suite.T(), grid.expected, actual)
 	}
 }
 
-func TestIsDir(t *testing.T) {
+func (suite *DirectorySuite) TestIsDir() {
 	grids := []struct {
 		filename string
 		error    error
@@ -184,14 +193,14 @@ func TestIsDir(t *testing.T) {
 	for _, grid := range grids {
 		actual, err := IsDir(grid.filename)
 		if err != nil {
-			assert.Equal(t, grid.error.Error(), err.Error())
+			assert.Equal(suite.T(), grid.error.Error(), err.Error())
 		} else {
-			assert.Equal(t, grid.expected, actual)
+			assert.Equal(suite.T(), grid.expected, actual)
 		}
 	}
 }
 
-func TestDirNotExists(t *testing.T) {
+func (suite *DirectorySuite) TestDirNotExists() {
 	grids := []struct {
 		path     string
 		expected bool
@@ -216,11 +225,37 @@ func TestDirNotExists(t *testing.T) {
 
 	for _, grid := range grids {
 		actual := DirNotExists(grid.path)
-		assert.Equal(t, grid.expected, actual, "want %t but got %t, path: %s\n", grid.expected, actual, grid.path)
+		assert.Equal(suite.T(), grid.expected, actual,
+			"want %t but got %t, path: %s\n", grid.expected, actual, grid.path)
 	}
 }
 
-func TestReadDir(t *testing.T) {
+func (suite *DirectorySuite) TestNotExistsMkdirAll() {
+	grids := []struct {
+		dir      string
+		expected error
+	}{
+		{
+			dir: "test/not.exists.mkdir.all/hello",
+		},
+		{
+			dir: "test/not.exists.mkdir.all/world",
+		},
+		{
+			dir: "test/not.exists.mkdir.all/helloshaohua",
+		},
+		{
+			dir: "test/not.exists.mkdir.all/wu.shaohua@foxmail.com",
+		},
+	}
+
+	for _, grid := range grids {
+		err := NotExistsMkdirAll(grid.dir)
+		assert.NoError(suite.T(), err)
+	}
+}
+
+func (suite *DirectorySuite) TestReadDir() {
 	grids := []struct {
 		path  string
 		error error
@@ -237,12 +272,12 @@ func TestReadDir(t *testing.T) {
 
 	for _, grid := range grids {
 		actual, err := ReadDir(grid.path, nil)
-		assert.NoError(t, err)
-		assert.Greater(t, len(actual), 0)
+		assert.NoError(suite.T(), err)
+		assert.Greater(suite.T(), len(actual), 0)
 	}
 }
 
-func TestWriteDir(t *testing.T) {
+func (suite *DirectorySuite) TestWriteDir() {
 	grids := []struct {
 		src string
 		dst string
@@ -267,15 +302,15 @@ func TestWriteDir(t *testing.T) {
 
 	for _, grid := range grids {
 		actual, err := ReadDir(grid.src, nil)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, actual)
+		assert.NoError(suite.T(), err)
+		assert.NotEmpty(suite.T(), actual)
 
 		err = WriteDir(grid.dst, actual, grid.ops...)
-		assert.NoError(t, err)
+		assert.NoError(suite.T(), err)
 	}
 }
 
-func TestCopy(t *testing.T) {
+func (suite *DirectorySuite) TestCopy() {
 	grids := []struct {
 		src string
 		dst string
@@ -300,10 +335,10 @@ func TestCopy(t *testing.T) {
 
 	for _, grid := range grids {
 		actual, err := ReadDir(grid.src, nil)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, actual)
+		assert.NoError(suite.T(), err)
+		assert.NotEmpty(suite.T(), actual)
 
 		err = WriteDir(grid.dst, actual, grid.ops...)
-		assert.NoError(t, err)
+		assert.NoError(suite.T(), err)
 	}
 }

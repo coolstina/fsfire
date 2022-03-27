@@ -98,6 +98,25 @@ func MkdirAll(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }
 
+// NotExistsMkdirAll Check whether the directory exists and create it if it does not
+func NotExistsMkdirAll(path string) error {
+	var exists = true
+
+	_, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
+		exists = false
+	}
+
+	if !exists {
+		err := os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ReadDir Get the directory file name by recursive reading.
 func ReadDir(path string, result []string) ([]string, error) {
 	if result == nil {
